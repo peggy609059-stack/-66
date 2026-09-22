@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧日照中心 - 實境模擬參訪系統</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+    <style>
+        body { margin: 0; font-family: "Microsoft JhengHei", sans-serif; overflow: hidden; }
+        #panorama { width: 100vw; height: 100vh; }
+        
+        /* 頂部標題 */
+        #title-overlay {
+            position: absolute; top: 20px; left: 20px; z-index: 10;
+            background: rgba(0, 0, 0, 0.75); color: white; padding: 15px 20px; border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3); pointer-events: none;
+        }
+        #title-overlay h2 { margin: 0 0 5px 0; font-size: 1.2rem; }
+        #title-overlay p { margin: 0; font-size: 0.85rem; color: #ccc; }
+
+        /* 右側快速導覽選單 */
+        #scene-menu {
+            position: absolute; top: 20px; right: 20px; z-index: 10;
+            background: rgba(0, 0, 0, 0.8); color: white; padding: 12px; border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3); max-height: 80vh; overflow-y: auto; width: 160px;
+        }
+        #scene-menu h3 { margin: 0 0 8px 0; font-size: 0.95rem; text-align: center; border-bottom: 1px solid #555; padding-bottom: 5px; }
+        .scene-btn {
+            display: block; width: 100%; background: #333; color: white; border: none;
+            padding: 8px 10px; margin-bottom: 5px; border-radius: 4px; text-align: left;
+            cursor: pointer; font-size: 0.85rem; transition: background 0.2s;
+        }
+        .scene-btn:hover { background: #007bff; }
+        .scene-btn.active { background: #0056b3; font-weight: bold; }
+
+        /* 行動裝置適配 */
+        @media (max-width: 768px) {
+            #scene-menu { display: none; } /* 手機版隱藏選單，保留全景畫面 */
+            #title-overlay { padding: 10px 15px; }
+            #title-overlay h2 { font-size: 1rem; }
+            #title-overlay p { font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="title-overlay">
+        <h2>蘆洲集賢社區長照機構線上參訪系統</h2>
+        <p>💡 提示：點擊畫面中箭頭或右側選單自由穿梭區域</p>
+    </div>
+
+    <!-- 右側快速導覽選單 -->
+    <div id="scene-menu">
+        <h3>快速導覽</h3>
+        <button class="scene-btn" onclick="switchScene('counter')">櫃台</button>
+        <button class="scene-btn" onclick="switchScene('shoes')">鞋櫃</button>
+        <button class="scene-btn" onclick="switchScene('locker')">置物櫃</button>
+        <button class="scene-btn" onclick="switchScene('corridor')">走廊</button>
+        <button class="scene-btn" onclick="switchScene('middle')">中段</button>
+        <button class="scene-btn" onclick="switchScene('safe_home')">平安家</button>
+        <button class="scene-btn" onclick="switchScene('happy')">快樂</button>
+        <button class="scene-btn" onclick="switchScene('Attend class')">上課區</button>
+        <button class="scene-btn" onclick="switchScene('Perfect')">圓滿</button>
+        <button class="scene-btn" onclick="switchScene('accessible_toilet')">無障礙廁所</button>
+        <button class="scene-btn" onclick="switchScene('toilet1')">廁所1</button>
+        <button class="scene-btn" onclick="switchScene('toilet2')">廁所2</button>
+        <button class="scene-btn" onclick="switchScene('activity')">活動區</button>
+    </div>
+
+    <div id="panorama"></div>
+
+    <script>
+    let viewer = pannellum.viewer('panorama', {
+        "default": {
+            "firstScene": "counter",
+            "author": "智慧場域專題",
+            "autoLoad": true,
+            "compass": true,
+            "showControls": true
+        },
+
+        "scenes": {
+            /* --- 1. 櫃台 --- */
+            "counter": {
+                "title": "櫃台",
+                "type": "equirectangular",
+                "panorama": "櫃台.jpg",
+                "hotSpots": [
+                    { "pitch": 0, "yaw": 120, "type": "scene", "text": "前往：鞋櫃", "sceneId": "shoes" }
+                ]
+            },
+
+            /* --- 2. 鞋櫃 --- */
+            "shoes": {
+                "title": "鞋櫃",
+                "type": "equirectangular",
+                "panorama": "鞋櫃.jpg",
+                "hotSpots": [
+                    { "pitch": 0, "yaw": 140, "type": "scene", "text": "返回：櫃台", "sceneId": "counter" },
+                    { "pitch": 0, "yaw": 0, "type": "scene", "text": "前往：置物櫃", "sceneId": "locker" }
+                ]
+            },
+
+            /* --- 3. 置物櫃 --- */
+            "locker": {
+                "title": "置物櫃",
+                "type": "equirectangular",
+                "panorama": "櫃子.jpg",
+                "hotSpots": [
+                    { "pitch": 0, "yaw": 90, "type": "scene", "text": "返回：鞋櫃", "sceneId": "shoes" },
+                    { "pitch": 0, "yaw": -90, "type": "scene", "text": "前往：活動區", "sceneId": "activity" },
+                    { "pitch": 0, "yaw": 180, "type": "scene", "text": "前往：走廊", "sceneId": "corridor" }
+                ]
+            },
+
+            /* --- 4. 走廊 --- */
+            "corridor": {
+                "title": "走廊",
+                "type": "equirectangular",
+                "panorama": "走廊.jpg",
+                "hotSpots": [
+                    { "pitch": 0, "yaw": 128, "type": "scene", "text": "返回：置物櫃", "sceneId": "locker" },
+                    { "pitch": 0, "yaw": 35, "type": "scene", "text": "前往：平安家", "sceneId": "safe_home" },
+                    { "pitch": 0, "yaw": -30, "type": "scene", "text": "前往：中段", "sceneId": "middle" },
+                    { "pitch": 0, "yaw": -50, "type": "scene", "text": "前往：無障礙廁所", "sceneId": "accessible_toilet" }
+                ]
+            },
+
+            /* --- 5. 中段 --- */
+            "middle": {
+                "title": "中段",
+                "type": "equirectangular",
+                "panorama": "中段.jpg",
+                "hotSpots": [
+                    { "pitch": 0, "yaw": 180, "type": "scene", "text": "前往：走廊", "sceneId": "corridor" },
+                    { "pitch": 0, "yaw": -50, "type": "scene", "text": "前往：上課區", "sceneId": "Attend class" },
+                    { "pitch": 0, "yaw": 80, "type": "scene", "text": "前往：快樂", "sceneId": "happy" },
+                    { "pitch": 0, "yaw": -130, "type": "scene", "text": "前往：廁所2", "sceneId": "toilet2" },
+                    { "pitch": 0, "yaw": -80, "type": "scene", "text": "前往：廁所1", "sceneId": "toilet1" }
+                ]
+            },
+
+            /* --- 6. 平安家 --- */
+            "safe_home": {
+                "title": "平安家",
+                "type": "equirectangular",
+                "panorama": "平安家.jpg",
+                "hotSpots": [
+                    { "pitch": 0, "yaw": 180, "type": "scene", "text": "返回：走廊", "sceneId": "corridor" }
+                ]
+            },
+
+            /* --- 7. 快樂 --- */
+            "happy": {
+                "title": "快樂",
+                "type": "equirectangular",
+                "panorama": "快樂.jpg",
+                "hotSpots": [
+                    { "pitch": 0, "yaw": 180, "type": "scene", "text": "返回：中段", "sceneId": "middle" }
+                ]
+            },
+
+            /* --- 8. 無障礙廁所 --- */
+            "accessible_toilet": {
+                "title": "無障礙廁所",
+                "type": "equirectangular",
+                "panorama": "廁所4.jpg",
+                "hotSpots": [
+                    { "pitch": 0, "yaw": 90, "type": "scene", "text": "返回：走廊", "sceneId": "corridor" }
+                ]
+            },
+
+            /* --- 9. 廁所2 --- */
+            "toilet2": {
+                "title": "廁所2",
+                "type": "equirectangular",
+                "panorama": "廁所2.jpg",
+                "hotSpots": [
+                    { "pitch": 0, "yaw": 180, "type": "scene", "text": "返回：中段", "sceneId": "middle" }
+                ]
+            },
+
+            /* --- 10. 廁所1 --- */
+            "toilet1": {
+                "title": "廁所1",
+                "type": "equirectangular",
+                "panorama": "廁所1.jpg", /* 依實際檔名微調 */
+                "hotSpots": [
+                    { "pitch": 0, "yaw": 180, "type": "scene", "text": "返回：中段", "sceneId": "middle" }
+                ]
+            },
+
+            /* --- 11. 圓滿 --- */
+            "Perfect": {
+                "title": "圓滿",
+                "type": "equirectangular",
+                "panorama": "圓滿.jpg",
+                "hotSpots": [
+                    { "pitch": 0, "yaw": 180, "type": "scene", "text": "返回：上課區", "sceneId": "Attend class" }
+                ]
+            },
+
+           /* --- 12. 上課區 --- */
+            "Attend class": {
+                "title": "上課區",
+                "type": "equirectangular",
+                "panorama": "上課區.jpg",
+                "hotSpots": [
+                    { "pitch": 0, "yaw": 180, "type": "scene", "text": "返回：中段", "sceneId": "middle" },
+                    { "pitch": 0, "yaw": 90, "type": "scene", "text": "前往：圓滿", "sceneId": "Perfect" }
+                ]
+            },
+         
+            /* --- 13. 活動區 --- */
+            "activity": {
+                "title": "活動區",
+                "type": "equirectangular",
+                "panorama": "活動區.jpg",
+                "hotSpots": [
+                    { "pitch": 0, "yaw": -180, "type": "scene", "text": "返回：置物櫃", "sceneId": "locker" }
+                ]
+            }
+        }
+    });
+
+    // 點擊右側選單切換場景，並更新選單按鈕的高亮狀態
+    function switchScene(sceneId) {
+        viewer.loadScene(sceneId);
+    }
+
+    viewer.on('scenechange', function(sceneId) {
+        let buttons = document.querySelectorAll('.scene-btn');
+        buttons.forEach(btn => {
+            btn.classList.remove('active');
+            if(btn.getAttribute('onclick').includes(`'${sceneId}'`)) {
+                btn.classList.add('active');
+            }
+        });
+    });
+    </script>
+
+</body>
+</html>
